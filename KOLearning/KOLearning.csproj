@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\BeginController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -150,6 +151,7 @@
     <Content Include="Views\Home\ContactsEditor.cshtml" />
     <Content Include="Views\Home\GridEditor.cshtml" />
     <Content Include="Views\Home\ShoppingCart.cshtml" />
+    <Content Include="Views\Begin\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,430 @@
+﻿<style>
+    .profitWarning {
+        color:red
+    }
+    .majorHighlight {
+        background-color:blue
+    }
+    .yes {
+        color:green
+    }
+</style>
+
+@*绑定*@
+<div id="div1">
+    The name is <span data-bind="text: personName"></span>
+</div>
+<div id="div2">
+    The name is <span data-bind="text: personName"></span>
+</div>
+<div id="div3">
+    The fullname is <span data-bind="text: fullName"></span>
+</div>
+<div id="div4">
+    The fullname is <span data-bind="text: fullName"></span>
+</div>
+<div id="div5">
+    <p>Enter bid price:<input data-bind ="value: formattedPrice" /></p>
+</div>
+<div id="div6">
+    @* visible绑定（bool类型或其他表示真假的值如int 0，null/not null），表示是否可见 *@
+    <span data-bind="visible:IsShow">能看到我吗</span>
+    @* 使用表达式 注意要使用方法*@
+    <span data-bind="visible:array().length>0">能看到我吗</span>
+</div>
+@* text绑定 *@
+<div id="div7">
+    <a data-bind="text:name()"></a>
+    <span data-bind="text:name().length"></span>
+    <label data-bind="text:name().length>0"></label>
+    <select data-bind="foreach:names">
+        @* 虚拟元素 *@
+        <option><!--ko text: $data--><!--/ko--></option>
+    </select>
+</div>
+<div id="div8">
+    <div data-bind="html: details"></div> 
+</div>
+<div id="div9">
+    <div data-bind="css: { profitWarning: currentProfit() < 0,majorHighlight:majorHighlight, yes:currentProfit() > 10000}">
+        Profit Information
+    </div> 
+    <div data-bind="style: { color: currentProfit() < 0 ? 'red' : 'black','background-color': majorHighlight ? 'green':'pink' }">
+        Profit Information
+    </div>
+</div>
+<div id="div10">
+    <a data-bind="attr: { href: url, title: details,'data-name': dataName }">
+        Report
+    </a>
+</div>
+<div id="div11">
+    <table>
+        <thead>
+            <tr><th>First name</th><th>Last name</th></tr>
+        </thead>
+        <tbody data-bind="foreach: people">
+            <tr>
+                <td data-bind="text: firstName"></td>
+                <td data-bind="text: lastName"></td>
+            </tr>
+        </tbody>
+    </table> 
+</div>
+<div id="div12">
+    <h4>People</h4>
+    <ul data-bind="foreach: people">
+        <li>
+            Name at position <span data-bind="text: $index"> </span>:
+            <span data-bind="text: name"> </span>
+            <a href="#" data-bind="click: $parent.removePeople">Remove</a>
+        </li>
+    </ul>
+    <button data-bind="click: addPeople">Add</button>
+</div>
+<div id="div13">
+    <ul data-bind="foreach: months">
+        <li >
+            <b data-bind="text: $data"></b>
+        </li>
+    </ul>
+</div>
+<div id="div14">
+    <ul data-bind="foreach: months">
+        <li>
+            <span data-bind="text: $parent.title"> </span><span data-bind="text: $data"></span>
+        </li>
+    </ul>
+</div>
+<div id="div15">
+    <ul data-bind="foreach:{data:categories,as:'category'}">
+        <li>
+            <ul data-bind="foreach:{data:items,as:'item'}">
+                <li>
+                    <span data-bind="text:category.name"></span>
+                    <span>:</span>
+                    <span data-bind="text:item"></span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div id="div16">
+    <ul>
+        <li>this is my item</li>
+        <!--ko foreach: myItems-->
+        <li><span data-bind="text:$data"></span></li>
+        <!--/ko-->
+    </ul>
+</div>
+<div id="div17">
+    <input type="checkbox" data-bind="checked: displayMessage"/>isShow
+    <div data-bind="if:displayMessage">
+        Here is if message
+    </div>
+</div>
+<div id="div18">
+    <ul data-bind="foreach: myItems">
+        <li >
+            <span data-bind="text:name"></span>
+            <div data-bind="if:items">
+                <span data-bind="text:items.itemName"></span>
+            </div>
+        </li>
+    </ul>
+</div>
+<div id="div19">
+    <h1 data-bind="text: city"> </h1>
+    <p data-bind="with: coords">
+        Latitude: <span data-bind="text: latitude"> </span>,
+        Longitude: <span data-bind="text: longitude"> </span>
+    </p> 
+</div>
+<div id="div20">
+    点击了<span data-bind="text:numberOfClicks"></span>次
+    <input type="button" data-bind="click:incrementClickCounter"/>
+</div>
+<div id="div21">
+    点击了<span data-bind="text:leftNumberOfClicks"></span>次
+    shift点击了<span data-bind="text:rightNumberOfClicks"></span>次
+    <input type="button" data-bind="click: function(data, event) { incrementClickCounter(data, event,3) }" />
+</div>
+<div id="div22">
+    <div data-bind="event: { mouseover: enableDetails, mouseout: disableDetails }">
+        Mouse over me
+    </div>
+    <div data-bind="visible: detailsEnabled">
+        Details
+    </div>
+</div>
+<div id="div23">
+    <form data-bind="submit: doSomething">
+        ... form contents go here ...
+        <button type="submit">
+            Submit
+        </button>
+    </form>
+</div>
+<div id="div24">
+    <p>
+        Login name:
+        <input data-bind="value: userName, valueUpdate: 'afterkeydown'" />
+    </p>
+    <p>
+        Password:
+        <input type="password" data-bind="value: userPassword" />
+    </p>
+</div>
+@section Scripts {
+    <script>
+        //demo1
+        //ViewModel
+        var myViewModel1 = { personName: 'Bob', personAge: 123 };
+        //激活Knockout
+        //applyBindings(a,b)
+        //第一个参数a:激活KO时声明式绑定的ViewModel
+        //第二个参数b:可选参数，设置要使用data-bind属性的html元素或容器，它限制只有指定的元素才激活KO
+        //用于一个界面绑定多个ViewModel的情况
+        //如ko.applyBindings(myViewModel, document.getElementById('someElementId'))
+        ko.applyBindings(myViewModel1, document.getElementById('div1'));
+
+        //demo2
+        //将属性声明为observable（监控属性），自动根据ViewModel的变化改变View
+        var myViewModel2 = {
+            personName: ko.observable('Bob'),
+            personAge: ko.observable(123)
+        };
+        ko.applyBindings(myViewModel2, document.getElementById('div2'));
+
+        //demo3
+        //计算属性，当firstName或lastName发生变化时，计算函数会被调用，并将值更新到view中
+        //this参数表示将对象传入到方法中，如果不传则不可能得到this.firstName()或者this.lastName()
+        var myViewModel3 = function AppViewModel() {
+            this.firstName = ko.observable('Bob');
+            this.lastName = ko.observable('Smith');
+            this.fullName = ko.computed(function () {
+                return this.firstName() + " " + this.lastName();
+            }, this);
+        }
+        ko.applyBindings(myViewModel3, document.getElementById('div3'));
+
+        //demo4
+        //使用self，将viewmodel本身复制一份，则不再需要传this
+        var myViewModel4 = function AppViewModel() {
+            var self = this;
+            self.firstName = ko.observable('Bob');
+            self.lastName = ko.observable('Smith');
+            self.fullName = ko.computed(function () {
+                return self.firstName() + " " + self.lastName();
+            });
+        }
+        ko.applyBindings(myViewModel4, document.getElementById('div4'));
+        
+        //demo5
+        //可写的计算属性
+        function MyViewModel5() {
+            this.price = ko.observable(25.99);
+            this.formattedPrice = ko.computed({
+                read: function () {
+                    return '$' + this.price().toFixed(2);
+                },
+                write: function (value) {
+                    // Strip out unwanted characters, parse as float, then write the raw data back to the underlying "price" servable       
+                    value = parseFloat(value.replace(/[^\.\d]/g, ""));
+                    this.price(isNaN(value) ? 0 : value);
+                    // Write to underlying storage
+                }, owner: this
+            });
+        }
+        ko.applyBindings(new MyViewModel5(), document.getElementById('div5'));
+
+        //demo6
+        //visible绑定
+        function MyViewModel6() {
+            this.IsShow = ko.observable(true);
+            this.array = ko.observableArray([])
+        }
+        ko.applyBindings(new MyViewModel6(), document.getElementById('div6'))
+
+        //demo7
+        //text绑定
+        function MyViewModel7() {
+            this.name = ko.observable("hehehe");
+            this.names = ["aaa", "bbb", "ccc"];
+        }
+        ko.applyBindings(new MyViewModel7(), document.getElementById('div7'))
+
+        //demo8
+        //html绑定，将html输出到页面，KO设置该参数值到元素的innerHTML属性上，元素之前的内容将被覆盖。
+        var MyViewModel8 = {        
+            details: ko.observable() // Initially blank  
+        };    
+        MyViewModel8.details("<em>For further details,view the report <a href='report.html'>here</a>.</em>"); // HTML content appears
+        ko.applyBindings(MyViewModel8, document.getElementById('div8'))
+
+        //demo9
+        //css类名绑定,添加或移除class可以一次设置多个类
+        //style属性绑定，添加或移除style
+        var MyViewModel9 = {
+            currentProfit: ko.observable(150000),
+            majorHighlight: ko.observable(true),
+        };
+        MyViewModel9.currentProfit(-50);
+        ko.applyBindings(MyViewModel9, document.getElementById('div9'))
+
+        //demo10
+        //attr绑定，添加或移除属性
+        var MyViewModel10 = {
+            url: ko.observable("year-end.html"),
+            details: ko.observable("Report including final year-end statistics"),
+            dataName: ko.observable("ming"),
+        };
+        ko.applyBindings(MyViewModel10, document.getElementById('div10'))
+
+        //demo11
+        //foreach绑定:方便我们循环遍历输出某个数组、集合中的内容
+        ko.applyBindings({
+            people: [
+                { firstName: 'Bert', lastName: 'Bertington' },
+                { firstName: 'Charles', lastName: 'Charlesforth' },
+                { firstName: 'Denise', lastName: 'Dentiste' }
+            ]
+        }, document.getElementById('div11'));
+
+        //demo12
+        //foreach绑定：动态增加删除遍历节点
+         function AppViewModel12() {
+            var self = this;
+            self.people = ko.observableArray([
+                { name: "bert" },
+                { name: "charles" },
+                { name: "denise" },
+            ]);
+            self.addPeople = function () {
+                self.people.push({name:'test'});
+            };
+            self.removePeople = function () {
+                self.people.remove(this);
+            }
+        }
+        ko.applyBindings(new AppViewModel12(), document.getElementById('div12'));
+
+        //demo13
+        //使用$data，显示数据
+        ko.applyBindings({
+            months: ['jan', 'feb', 'mar', 'etc']
+        }, document.getElementById('div13'));
+
+        //demo4
+        //使用$parent显示循环外的数据
+        ko.applyBindings({
+            months: ['jan', 'feb', 'mar', 'etc'],
+            title:'aa'
+        }, document.getElementById('div14'))
+
+        //demo15
+        //使用as起别名
+        var AppViewModel15 = {
+            categories: ko.observableArray([
+                { name: 'Fruit', items: ['Apple', 'Orange', 'Banana'] },
+                {name:'Vegetables',items:['Celery','Corn','Spinach']}
+            ])
+        }
+        ko.applyBindings(AppViewModel15, document.getElementById('div15'));
+
+        //demo16
+        //在没有可以绑定的元素时使用foreach，利用<!--ko--><!--/ko-->(虚拟标签)表示循环
+        ko.applyBindings({ myItems: ['AA', 'bb', 'CC', 'dd'] }, document.getElementById("div16"));
+
+        //demo17
+        //使用if控制控件是否显示，类似于demo6中的visible,但是visible绑定后无法改变，if可以动态改变
+        ko.applyBindings({ displayMessage: ko.observable(true) }, document.getElementById('div17'));
+
+        //demo18
+        //使用if判断是否为null，为null则不显示元素，也不会导致元素内的代码报错
+        //if绑定让元素不显示，是直接不生成html，而不是通过属性控制
+        ko.applyBindings({
+            myItems: [
+                { name: 'aa', items: { itemName: 'aaAA' } },
+                { name: 'bb', items: null },
+                { name: 'cc', items: { itemName: 'ccCC' } },
+            ]
+        }, document.getElementById('div18'));
+
+        //demo19
+        //使用with重新绑定上下文
+        ko.applyBindings({
+            city: "London",
+            coords: {
+                latitude: 51.5001524,
+                longitude: -0.1262362
+            }
+        }, document.getElementById('div19'))
+
+        //demo20
+        //click绑定
+        var AppViewModel20 = {
+            numberOfClicks: ko.observable(0),
+            incrementClickCounter: function () {
+                var number = this.numberOfClicks();
+                this.numberOfClicks(number + 1);
+            }
+        };
+        ko.applyBindings(AppViewModel20, document.getElementById('div20'));
+
+        //demo21
+        //给click绑定传参数，绑定时默认的第一个参数为this,第二个参数为事件对象
+        //如果需要使用event和this需要同时传过来
+        var AppViewModel21 = {
+            leftNumberOfClicks: ko.observable(0),
+            rightNumberOfClicks: ko.observable(0),
+            incrementClickCounter: function (data,event,a) {
+                var self = this;
+                var leftNumber = self.leftNumberOfClicks();
+                var rightNumber = self.rightNumberOfClicks();
+                if (event.shiftKey) {
+                    leftNumber += 1;
+                }
+                else {
+                    rightNumber += a;
+                }
+                
+                self.leftNumberOfClicks(leftNumber);
+                self.rightNumberOfClicks(rightNumber);
+            }
+        };
+        ko.applyBindings(AppViewModel21, document.getElementById('div21'));
+
+        //demo22
+        //event绑定
+        var AppViewModel22 = {
+            detailsEnabled: ko.observable(false),
+            enableDetails: function () {
+                this.detailsEnabled(true);
+            },
+            disableDetails: function () {
+                this.detailsEnabled(false);
+            }
+        };
+        ko.applyBindings(AppViewModel22, document.getElementById('div22'));
+
+        //demo23
+        //submit绑定，在提交表单时触发，默认覆盖本来的提交动作
+        ko.applyBindings({
+            doSomething: function () {
+                alert("提交了")
+            }
+        }, document.getElementById('div23'));
+
+        //demo24
+        //value绑定，当用户编辑表单控件的时候， view model对应的属性值会自动更新。同样，当你更新view model属性的时候，相对应的元素值在页面上也会自动更新。
+        var AppViewModel24 = {
+            userName: ko.observable(""),
+            // Initially blank        
+            userPassword: ko.observable("abc"), 
+            // Prepopulate   
+        };
+        ko.applyBindings(AppViewModel24, document.getElementById('div24'));
+
+    </script>
+}
